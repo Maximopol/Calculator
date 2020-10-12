@@ -8,8 +8,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.maximopol.mycalc.logic.Calculable;
+import com.maximopol.mycalc.logic.Parser;
+
 public class MainActivity extends AppCompatActivity {
-    TextView textView,oldTextView;
+    private TextView textView, oldTextView;
+    private boolean flagOperator, flagNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,8 +21,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         System.out.println("Start");
 
-        textView = (TextView) findViewById(R.id.textViewCurrentAction);
-        oldTextView= (TextView)findViewById(R.id.textViewPreviousAction);
+        textView = findViewById(R.id.textViewCurrentAction);
+        oldTextView = findViewById(R.id.textViewPreviousAction);
 
         View.OnClickListener listener = new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
@@ -65,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
                         textView.setText(textView.getText() + "9");
                         break;
                     }
-                    //=============================================
                     case R.id.buttonLG: {
                         textView.setText(textView.getText() + "ln(");
                         break;
@@ -93,9 +96,9 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.buttonC: {
                         String s = textView.getText().toString();
 
-                        textView.setText((s == null || s.length() == 0)
+                        textView.setText(s.length() == 0
                                 ? null
-                                : (s.substring(0, s.length() - 1)));
+                                : s.substring(0, s.length() - 1));
                         break;
                     }
                     case R.id.buttonSquareRoot: {
@@ -152,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.buttonEqual: {
 
                         oldTextView.setText(textView.getText());
+                        textView.setText(Calculable.calculate(Parser.prepareStr(textView.getText().toString())));
                         // textView.setText(textView.getText() + "8");
                         break;
                     }
@@ -159,94 +163,94 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        Button button0 = (Button) findViewById(R.id.button0);
+        Button button0 = findViewById(R.id.button0);
         button0.setOnClickListener(listener);
 
-        Button button1 = (Button) findViewById(R.id.button1);
+        Button button1 = findViewById(R.id.button1);
         button1.setOnClickListener(listener);
 
-        Button button2 = (Button) findViewById(R.id.button2);
+        Button button2 = findViewById(R.id.button2);
         button2.setOnClickListener(listener);
 
-        Button button3 = (Button) findViewById(R.id.button3);
+        Button button3 = findViewById(R.id.button3);
         button3.setOnClickListener(listener);
 
-        Button button4 = (Button) findViewById(R.id.button4);
+        Button button4 = findViewById(R.id.button4);
         button4.setOnClickListener(listener);
 
-        Button button5 = (Button) findViewById(R.id.button5);
+        Button button5 = findViewById(R.id.button5);
         button5.setOnClickListener(listener);
 
-        Button button6 = (Button) findViewById(R.id.button6);
+        Button button6 = findViewById(R.id.button6);
         button6.setOnClickListener(listener);
 
-        Button button7 = (Button) findViewById(R.id.button7);
+        Button button7 = findViewById(R.id.button7);
         button7.setOnClickListener(listener);
 
-        Button button8 = (Button) findViewById(R.id.button8);
+        Button button8 = findViewById(R.id.button8);
         button8.setOnClickListener(listener);
 
-        Button button9 = (Button) findViewById(R.id.button9);
+        Button button9 = findViewById(R.id.button9);
         button9.setOnClickListener(listener);
 
-        Button buttonLG = (Button) findViewById(R.id.buttonLG);
+        Button buttonLG = findViewById(R.id.buttonLG);
         buttonLG.setOnClickListener(listener);
 
-        Button buttonLN = (Button) findViewById(R.id.buttonLN);
+        Button buttonLN = findViewById(R.id.buttonLN);
         buttonLN.setOnClickListener(listener);
 
-        Button buttonTan = (Button) findViewById(R.id.buttonTan);
+        Button buttonTan = findViewById(R.id.buttonTan);
         buttonTan.setOnClickListener(listener);
 
-        Button buttonCos = (Button) findViewById(R.id.buttonCos);
+        Button buttonCos = findViewById(R.id.buttonCos);
         buttonCos.setOnClickListener(listener);
 
-        Button buttonSin = (Button) findViewById(R.id.buttonSin);
+        Button buttonSin = findViewById(R.id.buttonSin);
         buttonSin.setOnClickListener(listener);
 
-        Button buttonCA = (Button) findViewById(R.id.buttonCA);
+        Button buttonCA = findViewById(R.id.buttonCA);
         buttonCA.setOnClickListener(listener);
 
-        Button buttonC = (Button) findViewById(R.id.buttonC);
+        Button buttonC = findViewById(R.id.buttonC);
         buttonC.setOnClickListener(listener);
 
-        Button buttonSquareRoot = (Button) findViewById(R.id.buttonSquareRoot);
+        Button buttonSquareRoot = findViewById(R.id.buttonSquareRoot);
         buttonSquareRoot.setOnClickListener(listener);
 
-        Button buttonHooks = (Button) findViewById(R.id.buttonHooks);
+        Button buttonHooks = findViewById(R.id.buttonHooks);
         buttonHooks.setOnClickListener(listener);
 
-        Button buttonSquared2 = (Button) findViewById(R.id.buttonSquared2);
+        Button buttonSquared2 = findViewById(R.id.buttonSquared2);
         buttonSquared2.setOnClickListener(listener);
 
-        Button buttonPercent = (Button) findViewById(R.id.buttonPercent);
+        Button buttonPercent = findViewById(R.id.buttonPercent);
         buttonPercent.setOnClickListener(listener);
 
-        Button buttonSquaredByY = (Button) findViewById(R.id.buttonSquaredByY);
+        Button buttonSquaredByY = findViewById(R.id.buttonSquaredByY);
         buttonSquaredByY.setOnClickListener(listener);
 
-        Button buttonPI = (Button) findViewById(R.id.buttonPI);
+        Button buttonPI = findViewById(R.id.buttonPI);
         buttonPI.setOnClickListener(listener);
 
-        Button buttonDivide = (Button) findViewById(R.id.buttonDivide);
+        Button buttonDivide = findViewById(R.id.buttonDivide);
         buttonDivide.setOnClickListener(listener);
 
-        Button buttonE = (Button) findViewById(R.id.buttonE);
+        Button buttonE = findViewById(R.id.buttonE);
         buttonE.setOnClickListener(listener);
 
-        Button buttonDot = (Button) findViewById(R.id.buttonDot);
+        Button buttonDot = findViewById(R.id.buttonDot);
         buttonDot.setOnClickListener(listener);
 
-        Button buttonMultiply = (Button) findViewById(R.id.buttonMultiply);
+        Button buttonMultiply = findViewById(R.id.buttonMultiply);
         buttonMultiply.setOnClickListener(listener);
 
-        Button buttonSubtract = (Button) findViewById(R.id.buttonSubtract);
+        Button buttonSubtract = findViewById(R.id.buttonSubtract);
         buttonSubtract.setOnClickListener(listener);
 
-        Button buttonPlus = (Button) findViewById(R.id.buttonPlus);
+        Button buttonPlus = findViewById(R.id.buttonPlus);
         buttonPlus.setOnClickListener(listener);
 
-        Button buttonEqual = (Button) findViewById(R.id.buttonEqual);
+        Button buttonEqual = findViewById(R.id.buttonEqual);
         buttonEqual.setOnClickListener(listener);
     }
 }
