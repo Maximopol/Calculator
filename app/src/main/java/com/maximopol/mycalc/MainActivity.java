@@ -8,12 +8,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.maximopol.mycalc.logic.Calculable;
 import com.maximopol.mycalc.logic.Parser;
 
 public class MainActivity extends AppCompatActivity {
     private TextView textView, oldTextView;
     private boolean flagOperator, flagNumber;
+    private Parser parser = new Parser();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,7 +155,12 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.buttonEqual: {
 
                         oldTextView.setText(textView.getText());
-                        textView.setText(Calculable.calculate(Parser.prepareStr(textView.getText().toString())));
+
+                        textView.setText(parser.getExpression(Parser.prepareStr("√(9)")));
+
+//                        textView.setText(parser.getExpression(Parser.prepareStr(textView.getText().toString())));
+
+
                         // textView.setText(textView.getText() + "8");
                         break;
                     }
