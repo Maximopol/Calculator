@@ -9,14 +9,11 @@ public class Operation {
     static {
         operand_operation = new HashMap<>();
         operand_operation.put(2, new String[]{"-", "+", "*", "/", "^"});
-//        operand_operation.put(1, new String[]{"sin", "cos", "tg", "sqrt", "ln", "lg"});
         operand_operation.put(1, new String[]{"sin", "cos", "tg", "√", "ln", "lg"});
 
         priority_operation = new HashMap<>();
         priority_operation.put(0, new String[]{"-", "+"});
         priority_operation.put(1, new String[]{"*", "/"});
-//        priority_operation.put(2, new String[]{"^", "sqrt"});
-//        priority_operation.put(3, new String[]{"sin", "cos", "tg", "sqrt", "ln", "lg"});
         priority_operation.put(2, new String[]{"^", "√"});
         priority_operation.put(3, new String[]{"sin", "cos", "tg", "√", "ln", "lg"});
     }

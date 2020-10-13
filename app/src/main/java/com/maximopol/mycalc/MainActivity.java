@@ -12,11 +12,65 @@ import com.maximopol.mycalc.logic.Parser;
 
 public class MainActivity extends AppCompatActivity {
     private TextView textView, oldTextView;
-    private boolean flagOperator, flagNumber;
+    private boolean isInputOperator, isInputNumber, isInputPIorE, isInputDot;
+    private int countHooks;
     private Parser parser = new Parser();
+
+    @SuppressLint("SetTextI18n")
+    private void doPIE(String pie) {
+        if (isInputPIorE) {
+            textView.setText(textView.getText() + "*" + pie);
+        } else {
+            textView.setText(textView.getText() + pie);
+            isInputPIorE = true;
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void doFunction(String function) {
+        textView.setText(textView.getText() + function);
+        countHooks++;
+        isInputDot = false;
+        isInputOperator = true;
+        isInputNumber = false;
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void doOperator(String operator) {
+        if (!isInputOperator) {
+            textView.setText(textView.getText() + operator);
+            isInputPIorE = false;
+            isInputOperator = true;
+            isInputDot = false;
+            isInputNumber = true;
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void doNumber(String number) {
+        if (isInputPIorE & (!isInputNumber)) {
+            textView.setText(textView.getText() + "*" + number);
+        } else {
+            textView.setText(textView.getText() + number);
+        }
+        isInputNumber = true;
+        isInputPIorE = true;
+        isInputOperator = false;
+    }
+
+
+    private void initVariables() {
+        isInputPIorE = false;
+        isInputOperator = false;
+        isInputNumber = false;
+        isInputDot = false;
+        countHooks = 0;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        initVariables();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         System.out.println("Start");
@@ -30,67 +84,77 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 switch (v.getId()) {
                     case R.id.button0: {
-                        textView.setText(textView.getText() + "0");
+                        if (isInputPIorE) {
+                            textView.setText(textView.getText() + "*0");
+                        } else {
+                            textView.setText(textView.getText() + "0");
+                        }
+                        isInputNumber = true;
                         break;
                     }
                     case R.id.button1: {
-                        textView.setText(textView.getText() + "1");
+                        doNumber("1");
                         break;
                     }
                     case R.id.button2: {
-                        textView.setText(textView.getText() + "2");
+                        doNumber("2");
                         break;
                     }
                     case R.id.button3: {
-                        textView.setText(textView.getText() + "3");
+                        doNumber("3");
                         break;
                     }
                     case R.id.button4: {
-                        textView.setText(textView.getText() + "4");
+                        doNumber("4");
                         break;
                     }
                     case R.id.button5: {
-                        textView.setText(textView.getText() + "5");
+                        doNumber("5");
                         break;
                     }
                     case R.id.button6: {
-                        textView.setText(textView.getText() + "6");
+                        doNumber("6");
                         break;
                     }
                     case R.id.button7: {
-                        textView.setText(textView.getText() + "7");
+                        doNumber("7");
                         break;
                     }
                     case R.id.button8: {
-                        textView.setText(textView.getText() + "8");
+                        doNumber("8");
                         break;
                     }
                     case R.id.button9: {
-                        textView.setText(textView.getText() + "9");
+                        doNumber("9");
                         break;
                     }
                     case R.id.buttonLG: {
-                        textView.setText(textView.getText() + "ln(");
+                        doFunction("ln(");
+
                         break;
                     }
                     case R.id.buttonLN: {
-                        textView.setText(textView.getText() + "lg(");
+                        doFunction("lg(");
                         break;
                     }
                     case R.id.buttonTan: {
-                        textView.setText(textView.getText() + "tan(");
+                        doFunction("tan(");
                         break;
                     }
                     case R.id.buttonCos: {
-                        textView.setText(textView.getText() + "cos(");
+                        doFunction("cos(");
                         break;
                     }
                     case R.id.buttonSin: {
-                        textView.setText(textView.getText() + "sin(");
+                        doFunction("sin(");
                         break;
                     }
                     case R.id.buttonCA: {
                         textView.setText("");
+                        isInputNumber = false;
+                        isInputOperator = false;
+                        isInputPIorE = false;
+                        countHooks = 0;
                         break;
                     }
                     case R.id.buttonC: {
@@ -106,7 +170,23 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     }
                     case R.id.buttonHooks: {
-                        textView.setText(textView.getText() + "(");
+
+                        if (textView.getText().equals("")) {
+                            textView.setText("(");
+                            countHooks++;
+
+                        } else if (isInputOperator) {
+                            textView.setText(textView.getText() + "(");
+                            countHooks++;
+                        } else if (isInputNumber) {
+                            if (countHooks > 0) {
+                                textView.setText(textView.getText() + ")");
+                                countHooks--;
+                            } else {
+                                textView.setText(textView.getText() + "*(");
+                                countHooks++;
+                            }
+                        }
                         break;
                     }
                     case R.id.buttonSquared2: {
@@ -120,48 +200,54 @@ public class MainActivity extends AppCompatActivity {
                     }
                     case R.id.buttonSquaredByY: {
                         textView.setText(textView.getText() + "^(");
+                        countHooks++;
                         break;
                     }
                     case R.id.buttonPI: {
-                        textView.setText(textView.getText() + "π");
-                        break;
-                    }
-                    case R.id.buttonDot: {
-                        textView.setText(textView.getText() + "(");
+                        doPIE("π");
                         break;
                     }
                     case R.id.buttonE: {
-                        textView.setText(textView.getText() + "e");
+                        doPIE("e");
+                        break;
+                    }
+                    case R.id.buttonDot: {
+                        if (!isInputDot) {
+                            if (isInputNumber) {
+                                textView.setText(textView.getText() + ".");
+                            } else {
+                                textView.setText(textView.getText() + "0.");
+                            }
+                            isInputDot = true;
+                        }
                         break;
                     }
                     case R.id.buttonDivide: {
-                        textView.setText(textView.getText() + "/");
+                        doOperator("/");
                         break;
                     }
                     case R.id.buttonMultiply: {
-                        textView.setText(textView.getText() + "*");
-                        break;
-                    }
-                    case R.id.buttonSubtract: {
-                        textView.setText(textView.getText() + "-");
+                        doOperator("*");
                         break;
                     }
                     case R.id.buttonPlus: {
-                        textView.setText(textView.getText() + "+");
+                        doOperator("+");
                         break;
                     }
-
-
+                    case R.id.buttonSubtract: {
+                        if (!isInputOperator) {
+                            textView.setText(textView.getText() + "-");
+                            isInputPIorE = false;
+                            isInputOperator = true;
+                        }
+                        break;
+                    }
                     case R.id.buttonEqual: {
-
                         oldTextView.setText(textView.getText());
+                        textView.setText(parser.getExpression(Parser.prepareStr(textView.getText().toString())));
 
-                        textView.setText(parser.getExpression(Parser.prepareStr("√(9)")));
-
-//                        textView.setText(parser.getExpression(Parser.prepareStr(textView.getText().toString())));
-
-
-                        // textView.setText(textView.getText() + "8");
+                        initVariables();
+                        isInputDot = true;
                         break;
                     }
                 }
