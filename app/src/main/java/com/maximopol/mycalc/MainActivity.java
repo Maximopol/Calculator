@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.maximopol.mycalc.logic.Operation;
 import com.maximopol.mycalc.logic.Parser;
 
 public class MainActivity extends AppCompatActivity {
@@ -19,9 +20,10 @@ public class MainActivity extends AppCompatActivity {
     private int countHooks;
     private Parser parser = new Parser();
 
+
     @SuppressLint("SetTextI18n")
     private void doPIE(String pie) {
-        if (isInputPIorE | isInputNumber) {
+        if ((isInputPIorE | isInputNumber) & !isInputOperator) {
             textView.setText(textView.getText() + "*" + pie);
         } else {
             textView.setText(textView.getText() + pie);
@@ -30,11 +32,11 @@ public class MainActivity extends AppCompatActivity {
         isInputPIorE = true;
         isInputNumber = false;
         isInputDot = false;
+        isInputOperator = false;
     }
 
     @SuppressLint("SetTextI18n")
     private void doFunction(String function) {
-
         if ((isInputPIorE | isInputNumber) & !isInputOperator) {
             textView.setText(textView.getText() + "*" + function);
         } else {
@@ -55,6 +57,25 @@ public class MainActivity extends AppCompatActivity {
             isInputOperator = true;
             isInputDot = false;
             isInputNumber = true;
+        } else {
+            String s = textView.getText().toString();
+            if (s.equals("") | s.equals("-")) {
+                return;
+            }
+            String kek = textView.getText().toString();
+
+            switch (kek.substring(kek.length() - 1)) {
+                case "-":
+                case "+":
+                case "/":
+                case "*":
+                    textView.setText(s.substring(0, s.length() - 1) + operator);
+                    isInputPIorE = false;
+                    isInputOperator = true;
+                    isInputDot = false;
+                    isInputNumber = true;
+                    break;
+            }
         }
     }
 
@@ -85,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         textView = findViewById(R.id.textViewCurrentAction);
         oldTextView = findViewById(R.id.textViewPreviousAction);
@@ -137,7 +157,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                     case R.id.buttonLG: {
                         doFunction("lg(");
-
                         break;
                     }
                     case R.id.buttonLN: {
@@ -164,28 +183,106 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.buttonC: {
                         String s = textView.getText().toString();
 
-                        textView.setText(s.length() == 0
-                                ? null
-                                : s.substring(0, s.length() - 1));
+                        if (!s.equals("")) {
+                            String kek = textView.getText().toString();
+                            switch (kek.substring(kek.length() - 1)) {
+                                case "0":
+                                case "1":
+                                case "2":
+                                case "3":
+                                case "4":
+                                case "5":
+                                case "6":
+                                case "7":
+                                case "8":
+                                case "9": {
+                                    if (s.length() > 1) {
+//                                        switch (kek.substring(kek.length() - 1)){
+//                                            case "+":
+//                                            case "/":
+//                                            case "*":
+//                                            case "-":{
+//                                                isInputNumber = false;
+//                                                textView.setText(s.substring(0, s.length() - 1));
+//                                            }
+//                                        }
+                                    } else if (s.length() == 1) {
+                                        textView.setText("");
+                                        initVariables();
+                                    }
+                                    break;
+                                }
+
+                                case "-": {
+                                    break;
+                                }
+                                case "+":
+                                case "/":
+                                case "*": {
+                                    isInputOperator=false;
+                                    textView.setText(s.substring(0, s.length() - 1));
+                                    break;
+                                }
+                                case "!": {
+                                    textView.setText(s.substring(0, s.length() - 1));
+                                    break;
+                                }
+                                case "π":
+                                case "e": {
+                                    textView.setText(s.substring(0, s.length() - 1));
+                                    isInputPIorE = false;
+                                    isInputOperator=true;
+                                    break;
+                                }
+                                case ".": {
+                                    textView.setText(s.substring(0, s.length() - 1));
+                                    isInputDot = false;
+                                    break;
+                                }
+                                case ")": {
+                                    textView.setText(s.substring(0, s.length() - 1));
+                                    countHooks++;
+                                    break;
+                                }
+                                case "(": {
+//                                case "n":{
+//                                    break;
+//                                }
+//                                case "g":{
+//                                    break;
+//                                }
+//                                case "s":{
+//                                    break;
+//                                }
+//                                case "√":{
+//                                    break;
+//                                }
+//                                case "^":{
+//                                    break;
+//                                }
+
+                                    break;
+                                }
+                            }
+                        }
                         break;
                     }
+
                     case R.id.buttonSquareRoot: {
                         doFunction("√(");
                         break;
                     }
                     case R.id.buttonHooks: {
-
-                        if ((isInputPIorE | isInputNumber)&!isInputOperator) {
-                            if(countHooks == 0){
+                        if ((isInputPIorE | isInputNumber) & !isInputOperator) {
+                            if (countHooks == 0) {
                                 textView.setText(textView.getText() + "*(");
+                                isInputOperator = true;
                                 countHooks++;
-                            }
-                            else if (countHooks > 0) {
+                            } else if (countHooks > 0) {
                                 textView.setText(textView.getText() + ")");
                                 countHooks--;
                             }
-                        }
-                        else if (isInputOperator) {
+                        } else if (isInputOperator) {
                             textView.setText(textView.getText() + "(");
                             countHooks++;
                         }
@@ -240,18 +337,13 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     }
                     case R.id.buttonSubtract: {
-                        if(textView.getText().equals("")){
+                        if (textView.getText().equals("")) {
                             textView.setText("-");
-                        }
-                        else if( (textView.getText().charAt(textView.getText().length() - 1))=='(')
-                        {
+                        } else if ((textView.getText().charAt(textView.getText().length() - 1)) == '(') {
                             textView.setText(textView.getText() + "-");
-                        }
-                        else{
+                        } else {
                             doOperator("-");
                         }
-
-
                         break;
                     }
                     case R.id.buttonEqual: {
@@ -264,12 +356,15 @@ public class MainActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
 
-                        textView.setText(result);
                         initVariables();
-
-                        if (!result.equals("Error")) {
-                            isInputDot = true;
+                        if(Operation.isDouble(result)){
+                            isInputNumber=true;
+                            isInputDot=true;
+                            isInputOperator=false;
                         }
+
+                        textView.setText(result);
+
                         break;
                     }
                 }
