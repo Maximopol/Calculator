@@ -14,8 +14,8 @@ public class Calculable {
 
     private static void addOperation(String operation) {
         String prev_operation;
-        int prev_priority,
-                current_priority;
+        int prev_priority;
+        int current_priority;
         if (!stackOfOperations.isEmpty()) {
 
             prev_operation = stackOfOperations.pop();
@@ -23,7 +23,7 @@ public class Calculable {
             prev_priority = Operation.getPriority(prev_operation);
             current_priority = Operation.getPriority(operation);
 
-            if (prev_priority > current_priority) {
+            if (prev_priority > current_priority || prev_priority == current_priority) {
                 calculate(prev_operation);
                 addOperation(operation);
             } else {
@@ -38,14 +38,15 @@ public class Calculable {
 
     private static void calculate(String operation) {
         if (Operation.getCountOfOperand(operation) == 2) {
-            double second = stackOfNumbers.pop(),
-                    first = stackOfNumbers.pop();
+            double second = stackOfNumbers.pop();
+            double first = stackOfNumbers.pop();
 
             stackOfNumbers.push(Operation.action(first, second, operation));
         } else {
             double first = stackOfNumbers.pop();
             stackOfNumbers.push(Operation.action(first, operation));
         }
+        ;
     }
 
     public static double run(String[] str) {

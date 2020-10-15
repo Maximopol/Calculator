@@ -2,6 +2,7 @@ package com.maximopol.mycalc.logic;
 
 import java.util.HashMap;
 
+
 public class Operation {
     private static HashMap<Integer, String[]> operand_operation;
     private static HashMap<Integer, String[]> priority_operation;
@@ -9,14 +10,15 @@ public class Operation {
     static {
         operand_operation = new HashMap<>();
         operand_operation.put(2, new String[]{"-", "+", "*", "/", "^"});
-        operand_operation.put(1, new String[]{"sin", "cos", "tg", "√", "ln", "lg"});
+        operand_operation.put(1, new String[]{"sin", "cos", "tan", "√", "ln", "lg", "!"});
 
-        priority_operation = new HashMap<>();
-        priority_operation.put(0, new String[]{"-", "+"});
-        priority_operation.put(1, new String[]{"*", "/"});
-        priority_operation.put(2, new String[]{"^", "√"});
-        priority_operation.put(3, new String[]{"sin", "cos", "tg", "√", "ln", "lg"});
+        priority_operation = new HashMap<Integer, String[]>();
+        priority_operation.put(0, new String[]{"+", "-"});
+        priority_operation.put(2, new String[]{"*", "/"});
+        priority_operation.put(3, new String[]{"^", "√"});
+        priority_operation.put(4, new String[]{"sin", "cos", "tan", "√", "ln", "lg", "!"});
     }
+
 
     private static boolean find(String[] operations, String operation) {
         boolean result = false;
@@ -86,7 +88,7 @@ public class Operation {
             case "cos":
                 result = Math.cos(first);
                 break;
-            case "tg":
+            case "tan":
                 result = Math.tan(first);
                 break;
             case "√":
@@ -98,8 +100,23 @@ public class Operation {
             case "lg":
                 result = Math.log10(first);
                 break;
+            case "!":
+                result = getFactorial(first);
+                break;
         }
         return result;
+    }
+
+    private static double getFactorial(double value) {
+        int factorial1 = (int) value;
+        double factorial2 = value - factorial1;
+
+        for (int i = 1; i < Math.abs(value) - 1; i++) {
+            factorial1 *= i;
+        }
+        factorial2 = Math.log10(factorial1) + factorial2 * Math.log10((int) value + 1);
+
+        return Math.pow(10, factorial2);
     }
 
     public static boolean isDouble(String value) {
@@ -107,7 +124,7 @@ public class Operation {
         try {
             Double.parseDouble(value);
             result = true;
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         return result;
     }

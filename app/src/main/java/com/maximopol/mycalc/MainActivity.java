@@ -12,27 +12,39 @@ import com.maximopol.mycalc.logic.Parser;
 
 public class MainActivity extends AppCompatActivity {
     private TextView textView, oldTextView;
-    private boolean isInputOperator, isInputNumber, isInputPIorE, isInputDot;
+    private boolean isInputOperator;
+    private boolean isInputNumber;
+    private boolean isInputPIorE;
+    private boolean isInputDot;
     private int countHooks;
     private Parser parser = new Parser();
 
     @SuppressLint("SetTextI18n")
     private void doPIE(String pie) {
-        if (isInputPIorE) {
+        if (isInputPIorE | isInputNumber) {
             textView.setText(textView.getText() + "*" + pie);
         } else {
             textView.setText(textView.getText() + pie);
-            isInputPIorE = true;
+
         }
+        isInputPIorE = true;
+        isInputNumber = false;
+        isInputDot = false;
     }
 
     @SuppressLint("SetTextI18n")
     private void doFunction(String function) {
-        textView.setText(textView.getText() + function);
+
+        if ((isInputPIorE | isInputNumber) & !isInputOperator) {
+            textView.setText(textView.getText() + "*" + function);
+        } else {
+            textView.setText(textView.getText() + function);
+        }
         countHooks++;
         isInputDot = false;
         isInputOperator = true;
         isInputNumber = false;
+        isInputPIorE = false;
     }
 
     @SuppressLint("SetTextI18n")
@@ -61,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initVariables() {
         isInputPIorE = false;
-        isInputOperator = false;
+        isInputOperator = true;
         isInputNumber = false;
         isInputDot = false;
         countHooks = 0;
@@ -73,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        System.out.println("Start");
+
 
         textView = findViewById(R.id.textViewCurrentAction);
         oldTextView = findViewById(R.id.textViewPreviousAction);
@@ -84,12 +96,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 switch (v.getId()) {
                     case R.id.button0: {
-                        if (isInputPIorE) {
-                            textView.setText(textView.getText() + "*0");
-                        } else {
-                            textView.setText(textView.getText() + "0");
-                        }
-                        isInputNumber = true;
+                        doNumber("0");
                         break;
                     }
                     case R.id.button1: {
@@ -129,12 +136,12 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     }
                     case R.id.buttonLG: {
-                        doFunction("ln(");
+                        doFunction("lg(");
 
                         break;
                     }
                     case R.id.buttonLN: {
-                        doFunction("lg(");
+                        doFunction("ln(");
                         break;
                     }
                     case R.id.buttonTan: {
@@ -151,10 +158,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     case R.id.buttonCA: {
                         textView.setText("");
-                        isInputNumber = false;
-                        isInputOperator = false;
-                        isInputPIorE = false;
-                        countHooks = 0;
+                        initVariables();
                         break;
                     }
                     case R.id.buttonC: {
@@ -166,26 +170,24 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     }
                     case R.id.buttonSquareRoot: {
-                        textView.setText(textView.getText() + "√");
+                        doFunction("√(");
                         break;
                     }
                     case R.id.buttonHooks: {
 
-                        if (textView.getText().equals("")) {
-                            textView.setText("(");
-                            countHooks++;
-
-                        } else if (isInputOperator) {
-                            textView.setText(textView.getText() + "(");
-                            countHooks++;
-                        } else if (isInputNumber) {
-                            if (countHooks > 0) {
-                                textView.setText(textView.getText() + ")");
-                                countHooks--;
-                            } else {
+                        if ((isInputPIorE | isInputNumber)&!isInputOperator) {
+                            if(countHooks == 0){
                                 textView.setText(textView.getText() + "*(");
                                 countHooks++;
                             }
+                            else if (countHooks > 0) {
+                                textView.setText(textView.getText() + ")");
+                                countHooks--;
+                            }
+                        }
+                        else if (isInputOperator) {
+                            textView.setText(textView.getText() + "(");
+                            countHooks++;
                         }
                         break;
                     }
@@ -194,8 +196,8 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     }
 
-                    case R.id.buttonPercent: {
-                        textView.setText(textView.getText() + "%");
+                    case R.id.buttonFactorial: {
+                        textView.setText(textView.getText() + "!");
                         break;
                     }
                     case R.id.buttonSquaredByY: {
@@ -215,10 +217,13 @@ public class MainActivity extends AppCompatActivity {
                         if (!isInputDot) {
                             if (isInputNumber) {
                                 textView.setText(textView.getText() + ".");
+                            } else if (isInputPIorE) {
+                                textView.setText(textView.getText() + "*0.");
                             } else {
                                 textView.setText(textView.getText() + "0.");
                             }
                             isInputDot = true;
+                            isInputPIorE = false;
                         }
                         break;
                     }
@@ -235,19 +240,36 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     }
                     case R.id.buttonSubtract: {
-                        if (!isInputOperator) {
-                            textView.setText(textView.getText() + "-");
-                            isInputPIorE = false;
-                            isInputOperator = true;
+                        if(textView.getText().equals("")){
+                            textView.setText("-");
                         }
+                        else if( (textView.getText().charAt(textView.getText().length() - 1))=='(')
+                        {
+                            textView.setText(textView.getText() + "-");
+                        }
+                        else{
+                            doOperator("-");
+                        }
+
+
                         break;
                     }
                     case R.id.buttonEqual: {
                         oldTextView.setText(textView.getText());
-                        textView.setText(parser.getExpression(Parser.prepareStr(textView.getText().toString())));
+                        String result = "Error";
+                        try {
+                            result = parser.getExpression(Parser.prepareStr(textView.getText().toString()));
 
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        textView.setText(result);
                         initVariables();
-                        isInputDot = true;
+
+                        if (!result.equals("Error")) {
+                            isInputDot = true;
+                        }
                         break;
                     }
                 }
@@ -314,7 +336,7 @@ public class MainActivity extends AppCompatActivity {
         Button buttonSquared2 = findViewById(R.id.buttonSquared2);
         buttonSquared2.setOnClickListener(listener);
 
-        Button buttonPercent = findViewById(R.id.buttonPercent);
+        Button buttonPercent = findViewById(R.id.buttonFactorial);
         buttonPercent.setOnClickListener(listener);
 
         Button buttonSquaredByY = findViewById(R.id.buttonSquaredByY);

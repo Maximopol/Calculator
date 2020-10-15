@@ -7,24 +7,22 @@ import java.util.regex.Pattern;
 
 public class Parser {
     public static String prepareStr(String str) {
-//        Math.E;
-//        Math.PI;
         return str.
                 replaceAll(" ", "").
                 replaceAll("^-", "0-").
                 replaceAll("\\(-", "(0-").
-                replaceAll("e", Math.E+"").
-                replaceAll("π",  Math.PI+"");
-
-
-//                replaceAll("√", "sqrt");
+                replaceAll("e", Math.E + "").
+                replaceAll("π", Math.PI + "").
+                replaceAll("[-+*/]$", "");
     }
 
     public Parser() {
     }
 
     private boolean find(String str, String symbol) {
-        return Pattern.compile(symbol).matcher(str).find();
+        Pattern pattern = Pattern.compile(symbol);
+        Matcher matcher = pattern.matcher(str);
+        return matcher.find();
     }
 
     private String parse(String str, String regex) {
@@ -41,7 +39,7 @@ public class Parser {
     }
 
     private String convertToExpression(String str) {
-        for (String operation : new String[]{"-", "\\+", "\\*", "/", "\\^"}) {
+        for (String operation : new String[]{"-", "\\+", "\\*", "/", "\\^", "!"}) {
             str = str.replaceAll(operation, " " + operation + " ");
         }
         str = str.replaceAll("\\(", "\\( ");
@@ -68,8 +66,10 @@ public class Parser {
         str = convertToExpression(str);
 
         while (find(str, "\\(")) {
+
             str = parse(str, "\\(([^\\(\\)]*)\\)");
         }
+
         str = " " + Calculable.run(convertToExpression(str.split(" ")));
         return str.replaceAll(" ", "");
     }
