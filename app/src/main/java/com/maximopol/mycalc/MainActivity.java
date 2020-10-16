@@ -197,15 +197,23 @@ public class MainActivity extends AppCompatActivity {
                                 case "8":
                                 case "9": {
                                     if (s.length() > 1) {
-//                                        switch (kek.substring(kek.length() - 1)){
-//                                            case "+":
-//                                            case "/":
-//                                            case "*":
-//                                            case "-":{
-//                                                isInputNumber = false;
-//                                                textView.setText(s.substring(0, s.length() - 1));
-//                                            }
-//                                        }
+                                        textView.setText(s.substring(0, s.length() - 1));
+                                        switch (kek.charAt(kek.length() - 2)) {
+                                            case '+':
+                                            case '-':
+                                            case '*':
+                                            case '/':
+                                            case '(': {
+                                                textView.setText(s.substring(0, s.length() - 1));
+                                                isInputNumber = false;
+                                                isInputOperator = true;
+                                                break;
+                                            }
+                                            default: {
+                                                textView.setText(s.substring(0, s.length() - 1));
+                                                break;
+                                            }
+                                        }
                                     } else if (s.length() == 1) {
                                         textView.setText("");
                                         initVariables();
@@ -214,12 +222,21 @@ public class MainActivity extends AppCompatActivity {
                                 }
 
                                 case "-": {
+                                    if (s.length() == 1) {
+                                        textView.setText(s.substring(0, s.length() - 1));
+                                    } else if (kek.substring(kek.length() - 2).equals("(-")) {
+
+                                        textView.setText(s.substring(0, s.length() - 1));
+                                    } else {
+                                        isInputOperator = false;
+                                        textView.setText(s.substring(0, s.length() - 1));
+                                    }
                                     break;
                                 }
                                 case "+":
                                 case "/":
                                 case "*": {
-                                    isInputOperator=false;
+                                    isInputOperator = false;
                                     textView.setText(s.substring(0, s.length() - 1));
                                     break;
                                 }
@@ -231,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
                                 case "e": {
                                     textView.setText(s.substring(0, s.length() - 1));
                                     isInputPIorE = false;
-                                    isInputOperator=true;
+                                    isInputOperator = true;
                                     break;
                                 }
                                 case ".": {
@@ -245,22 +262,43 @@ public class MainActivity extends AppCompatActivity {
                                     break;
                                 }
                                 case "(": {
-//                                case "n":{
-//                                    break;
-//                                }
-//                                case "g":{
-//                                    break;
-//                                }
-//                                case "s":{
-//                                    break;
-//                                }
-//                                case "√":{
-//                                    break;
-//                                }
-//                                case "^":{
-//                                    break;
-//                                }
+                                    if (kek.length() == 1) {
+                                        textView.setText(s.substring(0, s.length() - 1));
+                                        countHooks--;
+                                    } else {
+                                        switch (kek.substring(kek.length() - 2)) {
+                                            case "^(":
+                                            case "√(": {
+                                                textView.setText(s.substring(0, s.length() - 2));
+                                                countHooks--;
+                                                break;
+                                            }
 
+                                            case "n(": {
+                                                textView.setText(s.substring(0, s.length()
+                                                        - (kek.substring(kek.length() - 3).equals("ln(")
+                                                        ? 3 : 4)));
+                                                countHooks--;
+                                                break;
+                                            }
+
+                                            case "s(": {
+                                                textView.setText(s.substring(0, s.length() - 4));
+                                                countHooks--;
+                                                break;
+                                            }
+                                            case "g(": {
+                                                textView.setText(s.substring(0, s.length() - 3));
+                                                countHooks--;
+                                                break;
+                                            }
+                                            default: {
+                                                textView.setText(s.substring(0, s.length() - 1));
+                                                countHooks--;
+                                                break;
+                                            }
+                                        }
+                                    }
                                     break;
                                 }
                             }
@@ -357,14 +395,13 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         initVariables();
-                        if(Operation.isDouble(result)){
-                            isInputNumber=true;
-                            isInputDot=true;
-                            isInputOperator=false;
+                        if (Operation.isDouble(result)) {
+                            isInputNumber = true;
+                            isInputDot = true;
+                            isInputOperator = false;
                         }
 
                         textView.setText(result);
-
                         break;
                     }
                 }
