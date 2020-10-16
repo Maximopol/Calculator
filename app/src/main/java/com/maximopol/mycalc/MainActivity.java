@@ -217,6 +217,7 @@ public class MainActivity extends AppCompatActivity {
                                     } else if (s.length() == 1) {
                                         textView.setText("");
                                         initVariables();
+                                        isInputOperator=true;
                                     }
                                     break;
                                 }
