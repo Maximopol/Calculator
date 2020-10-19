@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
                                     } else if (s.length() == 1) {
                                         textView.setText("");
                                         initVariables();
-                                        isInputOperator=true;
+                                        isInputOperator = true;
                                     }
                                     break;
                                 }
@@ -386,10 +386,18 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     }
                     case R.id.buttonEqual: {
-                        oldTextView.setText(textView.getText());
+                        StringBuilder stringBuilder = new StringBuilder(textView.getText());
+
+                        while (countHooks != 0) {
+                            stringBuilder.append(")");
+                            countHooks--;
+                        }
+
+                        oldTextView.setText(stringBuilder.toString());
+
                         String result = "Error";
                         try {
-                            result = parser.getExpression(Parser.prepareStr(textView.getText().toString()));
+                            result = parser.getExpression(Parser.prepareStr(stringBuilder.toString()));
 
                         } catch (Exception e) {
                             e.printStackTrace();
